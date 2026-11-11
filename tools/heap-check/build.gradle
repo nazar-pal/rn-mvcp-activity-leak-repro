@@ -1,0 +1,26 @@
+// Reads a converted heap dump of the reproducer and prints:
+// - MainActivity instances, and how many are destroyed
+// - MaintainVisibleScrollPositionHelper instances, and how many are in FabricUIManager.mListeners
+// - the shortest strong path from a GC root to each destroyed MainActivity (Shark's HeapAnalyzer)
+// - how many destroyed MainActivity instances are still reachable with FabricUIManager.mListeners ignored
+//
+// From the repository root:
+//   ReproducerApp/android/gradlew -p tools/heap-check run --args="$PWD/app-converted.hprof"
+plugins {
+  id 'application'
+}
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  implementation 'com.squareup.leakcanary:shark-android:2.14'
+  // Shark's Kotlin types appear in its Java API; this is the version Shark 2.14 itself depends on.
+  implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.3.72'
+}
+
+application {
+  mainClass = 'HeapCheck'
+  applicationDefaultJvmArgs = ['-Xmx2g']
+}

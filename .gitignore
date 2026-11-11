@@ -1,0 +1,21 @@
+# ReproducerApp/.gitignore (from the template) covers the app itself:
+# node_modules, build output, .gradle, .cxx, .kotlin, local.properties, *.iml,
+# keystores other than debug.keystore, Pods and Xcode user data.
+# This file catches what could land at the repository root and in tools/.
+
+.DS_Store
+.idea/
+.vscode/
+*.iml
+local.properties
+node_modules/
+
+# tools/heap-check build output
+tools/heap-check/.gradle/
+tools/heap-check/build/
+
+# Measurement output
+*.apk
+*.aab
+*.hprof
+*.log

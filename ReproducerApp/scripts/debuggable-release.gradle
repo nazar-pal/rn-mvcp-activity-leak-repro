@@ -1,0 +1,11 @@
+// Gradle init script, for heap dumps only. It makes the release build debuggable, so that
+// `adb shell am dumpheap` works on a user (non-root) emulator image. Nothing else changes:
+// the JS bundle stays embedded, and dev support stays off, because it follows the
+// react-android library's own build config, not the app's debuggable flag.
+//
+// cd android && ./gradlew -I ../scripts/debuggable-release.gradle :app:assembleRelease
+allprojects { p ->
+  p.plugins.withId('com.android.application') {
+    p.android.buildTypes.release.debuggable = true
+  }
+}

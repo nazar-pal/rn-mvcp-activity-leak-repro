@@ -1,0 +1,51 @@
+diff --git a/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/views/scroll/ReactHorizontalScrollViewManager.kt b/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/views/scroll/ReactHorizontalScrollViewManager.kt
+--- a/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/views/scroll/ReactHorizontalScrollViewManager.kt
++++ b/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/views/scroll/ReactHorizontalScrollViewManager.kt
+@@ -74,6 +74,13 @@ constructor(private val fpsListener: FpsListener? = null) :
+     return preparedView
+   }
+ 
++  override fun onDropViewInstance(view: ReactHorizontalScrollView) {
++    // A view that was never attached to a window is never detached, so onDetachedFromWindow
++    // never stops its maintainVisibleContentPosition helper. Stop it when the view is dropped.
++    view.setMaintainVisibleContentPosition(null)
++    super.onDropViewInstance(view)
++  }
++
+   override fun getName(): String = REACT_CLASS
+ 
+   public override fun createViewInstance(context: ThemedReactContext): ReactHorizontalScrollView =
+diff --git a/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/views/scroll/ReactNestedScrollViewManager.kt b/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/views/scroll/ReactNestedScrollViewManager.kt
+--- a/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/views/scroll/ReactNestedScrollViewManager.kt
++++ b/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/views/scroll/ReactNestedScrollViewManager.kt
+@@ -83,6 +83,13 @@ constructor(private val fpsListener: FpsListener? = null) :
+     return preparedView
+   }
+ 
++  override fun onDropViewInstance(view: ReactNestedScrollView) {
++    // A view that was never attached to a window is never detached, so onDetachedFromWindow
++    // never stops its maintainVisibleContentPosition helper. Stop it when the view is dropped.
++    view.setMaintainVisibleContentPosition(null)
++    super.onDropViewInstance(view)
++  }
++
+   override fun getName(): String = REACT_CLASS
+ 
+   override fun createViewInstance(context: ThemedReactContext): ReactNestedScrollView =
+diff --git a/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/views/scroll/ReactScrollViewManager.kt b/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/views/scroll/ReactScrollViewManager.kt
+--- a/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/views/scroll/ReactScrollViewManager.kt
++++ b/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/views/scroll/ReactScrollViewManager.kt
+@@ -75,6 +75,13 @@ constructor(private val fpsListener: FpsListener? = null) :
+     return preparedView
+   }
+ 
++  override fun onDropViewInstance(view: ReactScrollView) {
++    // A view that was never attached to a window is never detached, so onDetachedFromWindow
++    // never stops its maintainVisibleContentPosition helper. Stop it when the view is dropped.
++    view.setMaintainVisibleContentPosition(null)
++    super.onDropViewInstance(view)
++  }
++
+   override fun getName(): String = REACT_CLASS
+ 
+   public override fun createViewInstance(context: ThemedReactContext): ReactScrollView =

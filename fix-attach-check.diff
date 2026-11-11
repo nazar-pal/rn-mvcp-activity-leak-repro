@@ -1,0 +1,69 @@
+diff --git a/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/views/scroll/MaintainVisibleScrollPositionHelper.kt b/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/views/scroll/MaintainVisibleScrollPositionHelper.kt
+--- a/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/views/scroll/MaintainVisibleScrollPositionHelper.kt
++++ b/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/views/scroll/MaintainVisibleScrollPositionHelper.kt
+@@ -69,7 +69,10 @@ internal class MaintainVisibleScrollPositionHelper<ScrollViewT>(
+     }
+   }
+ 
+-  /** Start listening to view hierarchy updates. Should be called when this is created. */
++  /**
++   * Start listening to view hierarchy updates. Called while the scroll view is attached to a
++   * window, so that a view that is never attached is never registered.
++   */
+   fun start() {
+     if (isListening) {
+       return
+diff --git a/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/views/scroll/ReactHorizontalScrollView.kt b/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/views/scroll/ReactHorizontalScrollView.kt
+--- a/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/views/scroll/ReactHorizontalScrollView.kt
++++ b/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/views/scroll/ReactHorizontalScrollView.kt
+@@ -441,7 +441,11 @@ constructor(context: Context, private val fpsListener: FpsListener? = null) :
+     if (config != null && maintainVisibleContentPositionHelper == null) {
+       val helper = MaintainVisibleScrollPositionHelper(this, true)
+       maintainVisibleContentPositionHelper = helper
+-      helper.start()
++      // onAttachedToWindow starts the helper. Starting it here as well would register a view that
++      // is never attached with the UIManager, and nothing would ever unregister it.
++      if (isAttachedToWindow) {
++        helper.start()
++      }
+     } else if (config == null) {
+       maintainVisibleContentPositionHelper?.stop()
+       maintainVisibleContentPositionHelper = null
+diff --git a/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/views/scroll/ReactNestedScrollView.kt b/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/views/scroll/ReactNestedScrollView.kt
+--- a/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/views/scroll/ReactNestedScrollView.kt
++++ b/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/views/scroll/ReactNestedScrollView.kt
+@@ -406,8 +406,13 @@ constructor(context: Context, private val fpsListener: FpsListener? = null) :
+       config: MaintainVisibleScrollPositionHelper.Config?,
+   ) {
+     if (config != null && maintainVisibleContentPositionHelper == null) {
+-      maintainVisibleContentPositionHelper =
+-          MaintainVisibleScrollPositionHelper(this, false).also { it.start() }
++      val helper = MaintainVisibleScrollPositionHelper(this, false)
++      maintainVisibleContentPositionHelper = helper
++      // onAttachedToWindow starts the helper. Starting it here as well would register a view that
++      // is never attached with the UIManager, and nothing would ever unregister it.
++      if (isAttachedToWindow) {
++        helper.start()
++      }
+     } else if (config == null && maintainVisibleContentPositionHelper != null) {
+       maintainVisibleContentPositionHelper?.stop()
+       maintainVisibleContentPositionHelper = null
+diff --git a/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/views/scroll/ReactScrollView.kt b/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/views/scroll/ReactScrollView.kt
+--- a/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/views/scroll/ReactScrollView.kt
++++ b/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/views/scroll/ReactScrollView.kt
+@@ -398,8 +398,13 @@ constructor(context: Context, private val fpsListener: FpsListener? = null) :
+       config: MaintainVisibleScrollPositionHelper.Config?,
+   ) {
+     if (config != null && maintainVisibleContentPositionHelper == null) {
+-      maintainVisibleContentPositionHelper =
+-          MaintainVisibleScrollPositionHelper(this, false).also { it.start() }
++      val helper = MaintainVisibleScrollPositionHelper(this, false)
++      maintainVisibleContentPositionHelper = helper
++      // onAttachedToWindow starts the helper. Starting it here as well would register a view that
++      // is never attached with the UIManager, and nothing would ever unregister it.
++      if (isAttachedToWindow) {
++        helper.start()
++      }
+     } else if (config == null && maintainVisibleContentPositionHelper != null) {
+       maintainVisibleContentPositionHelper?.stop()
+       maintainVisibleContentPositionHelper = null
